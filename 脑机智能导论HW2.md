@@ -6,7 +6,7 @@
 
 #### 1.数据处理
 
-此部分主要参考了GitHub中DynamicalComponentsAnalysis的tutorial中的相关代码，从`chan_names` 数据集中获取通道名称，然后通过解析获取 M1 和 S1 的索引，并获取采样时间相关数据。从`t`数据集中获取时间信息。 从`target_pos` 数据集中获取目标位置信息。然后，通过计算目标位置的变化，确定每个试验的起始时间和结束时间。从`cursor_pos`数据集中经过处理获取速度和加速度数据。 将获取的时间、试验开始时间、试验结束时间、目标位置信息、达到距离（reach distance）和达到角度（reach angle）等信息整理成一个字典。
+此部分主要参考了GitHub中DynamicalComponentsAnalysis的tutorial中的相关代码，从`chan_names` 数据集中获取通道名称，然后通过解析获取 M1 和 S1 的索引，并获取采样时间相关数据。从`t`数据集中获取时间信息。 从`target_pos` 数据集中获取目标位置信息。然后，通过计算目标位置的变化，确定每个试验的起始时间和结束时间。从`cursor_pos`数据集中经过处理获取速度。 将获取的时间、试验开始时间、试验结束时间、目标位置信息、达到距离（reach distance）和达到角度（reach angle）等信息整理成一个字典。
 
 ```python
 with h5py.File(filename, "r") as f:
@@ -89,16 +89,19 @@ with h5py.File(filename, "r") as f:
         
         result['spike_times'] = np.array(spike_time,dtype=object)
         print(result['spike_times'])
-        result['vels'] = []
-        cursor_pos = f['cursor_pos'][:].T
-        vel = np.diff(cursor_pos,axis=0,prepend=cursor_pos[0].reshape(1,-1))/0.004
-        vel[0]=vel[1]
-        # print(vel)
-        acc = vel = np.diff(vel,axis=0,prepend=vel[0].reshape(1,-1))/0.004
-        acc[0]=acc[2]
-        acc[1]=acc[2]
-        result['vels'] = vel
-        result['accs'] = acc
+        for i in range (0,len(result['reach_angle'])):
+            vel = []
+            if(i==0):
+                vel.append((result['reach_dist_x'][1]-result['reach_dist_x'][0])/0.004)
+                vel.append((result['reach_dist_y'][1]-result['reach_dist_y'][0])/0.004)
+            else:
+                vel.append((result['reach_dist_x'][i]-result['reach_dist_x'][i-1])/0.004)
+                vel.append((result['reach_dist_x'][i]-result['reach_dist_x'][i-1])/0.004)
+            result['vels'].append(vel)
+            if(i==0):
+                result['vels'].append(math.sqrt((result['reach_dist_x'][1]-result['reach_dist_x'][0])*(result['reach_dist_x'][1]-result['reach_dist_x'][0])+(result['reach_dist_y'][1]-result['reach_dist_y'][0])*(result['reach_dist_y'][1]-result['reach_dist_y'][0])/0.004))
+                continue
+            result['vels'].append(math.sqrt((result['reach_dist_x'][i]-result['reach_dist_x'][i-1])*(result['reach_dist_x'][i]-result['reach_dist_x'][i-1])+(result['reach_dist_y'][i]-result['reach_dist_y'][i-1])*(result['reach_dist_y'][i]-result['reach_dist_y'][i-1])/0.004))
 ```
 
 #### 2.绘制神经元raster和PSTH图 
@@ -139,19 +142,19 @@ PSTH中，我们同样根据输入的方向，在 reach_angle 中找到对应方
 
 90°方向的raster plot：
 
-![left_raster](C:\Users\ruanyijie\Desktop\tmp\up_raster.jpg)
+![left_raster](C:\Users\ruanyijie\Desktop\tmp\naoji\up_raster.jpg)
 
 -90°方向的raster plot：
 
-![right_raster](C:\Users\ruanyijie\Desktop\tmp\down_raster.jpg)
+![right_raster](C:\Users\ruanyijie\Desktop\tmp\naoji\down_raster.jpg)
 
 90°方向的PSTH图：
 
-![up_psth](C:\Users\ruanyijie\Desktop\tmp\up_psth.jpg)
+![up_psth](C:\Users\ruanyijie\Desktop\tmp\naoji\up_psth.jpg)
 
 -90°方向的PSTH图：
 
-![down_psth](C:\Users\ruanyijie\Desktop\tmp\down_psth.jpg)
+![down_psth](C:\Users\ruanyijie\Desktop\tmp\naoji\down_psth.jpg)
 
 #### 3.绘制神经元的tuning curve 
 
@@ -203,9 +206,9 @@ PSTH中，我们同样根据输入的方向，在 reach_angle 中找到对应方
 
 部分神经元的tuning curve图：
 
-![0_tuning_curve](C:\Users\ruanyijie\Desktop\tmp\0_tuning_curve.jpg)
+![0_tuning_curve](C:\Users\ruanyijie\Desktop\tmp\naoji\0_tuning_curve.jpg)
 
-![1_tuning_curve](C:\Users\ruanyijie\Desktop\tmp\1_tuning_curve.jpg)
+![1_tuning_curve](C:\Users\ruanyijie\Desktop\tmp\naoji\1_tuning_curve.jpg)
 
 ### 任务2 神经元运动调制分析
 
@@ -236,7 +239,7 @@ PSTH中，我们同样根据输入的方向，在 reach_angle 中找到对应方
 
 最终R2绘制的直方图：
 
-![check_R2](C:\Users\ruanyijie\Desktop\tmp\check_R2.jpg)
+![check_R2](C:\Users\ruanyijie\Desktop\tmp\naoji\check_R2.jpg)
 
 ### 任务3 实战：基于卡尔曼滤波器的运动解码
 
@@ -457,7 +460,7 @@ R值为测量噪声。`R`太大，卡尔曼滤波响应会变慢，因为它对�
         newMat = pca_sk.fit_transform(unsorted_spike)
 ```
 
-![22_pca](C:\Users\ruanyijie\Desktop\tmp\22_pca.jpg)
+![22_pca](C:\Users\ruanyijie\Desktop\tmp\naoji\22_pca.jpg)
 
 使用K-means进行聚类：
 
@@ -466,7 +469,7 @@ R值为测量噪声。`R`太大，卡尔曼滤波响应会变慢，因为它对�
         cluster = KMeans(n_clusters=n_clusters,random_state=0).fit(newMat)
 ```
 
-![22_kmeans](C:\Users\ruanyijie\Desktop\tmp\22_kmeans.jpg)
+![22_kmeans](C:\Users\ruanyijie\Desktop\tmp\naoji\22_kmeans.jpg)
 
 ### 任务2 分类结果评估和分析
 

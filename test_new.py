@@ -172,23 +172,23 @@ def load_data(filename, high_pass=True, sqrt=True, thresh=5000, zscore_pos=True)
         acc[1]=acc[2]
         result['vels'] = vel
         result['accs'] = acc
-        # print(len(vel))
-        # print(len(result['time']))
-        # print(len(result['reach_angle']))
-        # for i in range (0,len(result['reach_angle'])):
-        #     vel = []
-        #     if(i==0):
-        #         vel.append((result['reach_dist_x'][1]-result['reach_dist_x'][0])/0.004)
-        #         vel.append((result['reach_dist_y'][1]-result['reach_dist_y'][0])/0.004)
-        #     else:
-        #         vel.append((result['reach_dist_x'][i]-result['reach_dist_x'][i-1])/0.004)
-        #         vel.append((result['reach_dist_x'][i]-result['reach_dist_x'][i-1])/0.004)
-        #     result['vels'].append(vel)
-            # if(i==0):
-            #     result['vels'].append(math.sqrt((result['reach_dist_x'][1]-result['reach_dist_x'][0])*(result['reach_dist_x'][1]-result['reach_dist_x'][0])+(result['reach_dist_y'][1]-result['reach_dist_y'][0])*(result['reach_dist_y'][1]-result['reach_dist_y'][0])/0.004))
-            #     continue
-            # result['vels'].append(math.sqrt((result['reach_dist_x'][i]-result['reach_dist_x'][i-1])*(result['reach_dist_x'][i]-result['reach_dist_x'][i-1])+(result['reach_dist_y'][i]-result['reach_dist_y'][i-1])*(result['reach_dist_y'][i]-result['reach_dist_y'][i-1])/0.004))
-        # print(result['vels'])                           
+        print(len(vel))
+        print(len(result['time']))
+        print(len(result['reach_angle']))
+        for i in range (0,len(result['reach_angle'])):
+            vel = []
+            if(i==0):
+                vel.append((result['reach_dist_x'][1]-result['reach_dist_x'][0])/0.004)
+                vel.append((result['reach_dist_y'][1]-result['reach_dist_y'][0])/0.004)
+            else:
+                vel.append((result['reach_dist_x'][i]-result['reach_dist_x'][i-1])/0.004)
+                vel.append((result['reach_dist_x'][i]-result['reach_dist_x'][i-1])/0.004)
+            result['vels'].append(vel)
+            if(i==0):
+                result['vels'].append(math.sqrt((result['reach_dist_x'][1]-result['reach_dist_x'][0])*(result['reach_dist_x'][1]-result['reach_dist_x'][0])+(result['reach_dist_y'][1]-result['reach_dist_y'][0])*(result['reach_dist_y'][1]-result['reach_dist_y'][0])/0.004))
+                continue
+            result['vels'].append(math.sqrt((result['reach_dist_x'][i]-result['reach_dist_x'][i-1])*(result['reach_dist_x'][i]-result['reach_dist_x'][i-1])+(result['reach_dist_y'][i]-result['reach_dist_y'][i-1])*(result['reach_dist_y'][i]-result['reach_dist_y'][i-1])/0.004))
+        print(result['vels'])                           
         return result
 
 def plot_tuning_curve(data, cell=0):
@@ -815,7 +815,7 @@ def pca_and_sort(filename, chan_idx):
                 
 ## Make trial data
 if __name__ == '__main__':
-    fname = 'D:\hw2dataset/indy_20160627_01.mat'
+    fname = 'D:\hw2dataset/indy_20160407_02.mat'
     data = load_data(fname)
     # print(data)
     # # 画神经元raster图
@@ -823,40 +823,20 @@ if __name__ == '__main__':
     # # 画神经元PSTH图
     # plot_psth(data, 'down')
     # 画神经元tuning curve图
-    # unsorted = np.zeros(20, dtype=np.int32)
     # R2s = []
     # for num in range(100):
     #     R2 = plot_tuning_curve(data, num)
     #     unsort = int(R2/0.05)
-    #     unsorted[unsort]+=1
     #     R2s.append(R2)
-    # print(unsorted)
     # plt.figure() #初始化一张图
     # plt.hist(R2s, 20, range=(0,1))  #直方图关键操作
     # plt.xlabel('R2')
     # plt.ylabel('cell') 
     # plt.savefig(f"./check_R2.jpg")
-    kf(fname)
+    # kf(fname)
     # 神经元PCA降维和分类
     # pca_and_sort(fname, 22)
 
 
-    # # 查看光标移动的图片
-# plt.figure(figsize=(5, 5))
-# plt.plot(*Y[:1200].T, c='k')
-# plt.xlabel('cursor x')
-# plt.ylabel('cursor y')
-    # data = load_sabes_data(fname, bin_width_s=.05)
-    # keys = data.keys()
-    # print(data.keys())
-    # print(*[(key, data[key].shape) for key in keys])
-    # X = data['M1']
-    # Xn = X / X.std(axis=0, keepdims=True) # normalized version will be used later
-    # Y = data['cursor']
-    # plt.figure(figsize=(10, 5))
-    # plt.imshow(X[:1200].T, extent=[0, 1199*.05, 0, 108], cmap='gray_r', aspect='auto')
-    # plt.xlabel('Time (s)')
-    # plt.ylabel('Neuron')
-    # plt.savefig("./1.jpg")
 
     
