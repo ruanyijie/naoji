@@ -1,5 +1,7 @@
 # 脑机智能导论HW2
 
+## HW2和附加作业代码均已放在https://github.com/ruanyijie/naoji中
+
 ### 任务1 神经元锋电位信号分析
 
 #### 1.数据处理
